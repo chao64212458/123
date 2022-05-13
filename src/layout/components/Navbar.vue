@@ -6,7 +6,7 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <search id="header-search" class="right-menu-item" />
+        <!-- <search id="header-search" class="right-menu-item" /> -->
 
         <!-- <el-tooltip content="项目文档" effect="dark" placement="bottom">
           <Doc class="right-menu-item hover-effect" />
@@ -16,9 +16,9 @@
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-        <el-tooltip content="布局设置" effect="dark" placement="bottom">
+        <!-- <el-tooltip content="布局设置" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip> -->
 
       </template>
 
@@ -54,17 +54,13 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
-import SizeSelect from '@/components/SizeSelect'
-import Search from '@/components/HeaderSearch'
 import Avatar from '@/assets/images/avatar.png'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger,
-    Screenfull,
-    SizeSelect,
-    Search
+    Screenfull
   },
   data() {
     return {
@@ -181,16 +177,17 @@ export default {
           cursor: pointer;
           width: 40px;
           height: 40px;
-          border-radius: 10px;
+          border-radius: 50%;
         }
 
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          top: 25px;
+          top: 15px;
           font-size: 12px;
         }
+
       }
     }
   }
