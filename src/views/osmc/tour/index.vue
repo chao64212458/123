@@ -15,6 +15,15 @@
             :value="item.value"
           />
         </el-select>
+        <label class="el-form-item-label">类型</label>
+        <el-select v-model="query.subType" clearable placeholder="请选择" class="filter-item" @keyup.enter.native="crud.toQuery">
+          <el-option
+            v-for="item in dict.tour_type"
+            :key="item.id"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
         <!-- <label class="el-form-item-label">发布时间</label>
         <date-range-picker v-model="query.articleDate" class="date-item" /> -->
         <rrOperation :crud="crud" />

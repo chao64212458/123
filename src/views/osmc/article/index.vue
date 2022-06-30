@@ -95,6 +95,18 @@
           <el-form-item label="文章简介">
             <el-input v-model="form.introduction" :rows="5" type="textarea" style="width: 800px;" />
           </el-form-item>
+          <el-form-item label="阅读次数">
+            <el-input v-model="form.readCount" type="number" style="width: 370px;" />
+          </el-form-item>
+          <el-form-item label="SEO词条1" prop="seo1">
+            <el-input v-model="form.seo1" style="width: 370px;" />
+          </el-form-item>
+          <el-form-item label="SEO词条2" prop="seo2">
+            <el-input v-model="form.seo2" style="width: 370px;" />
+          </el-form-item>
+          <el-form-item label="SEO词条3" prop="seo3">
+            <el-input v-model="form.seo3" style="width: 370px;" />
+          </el-form-item>
           <el-form-item v-if="crud.status.add" label="附件">
             <el-upload
               ref="upload"
@@ -175,6 +187,7 @@
         </el-table-column>
         <el-table-column prop="articleDate" label="发布时间" />
         <el-table-column prop="articleFrom" label="文章来源" />
+        <el-table-column prop="readCount" label="阅读次数" />
         <el-table-column prop="filename" label="附件" />
         <el-table-column prop="path" label="预览图">
           <template slot-scope="{row}">
@@ -239,7 +252,7 @@ const imgsize = [{ 'type': '0', size: { 'width': 340, 'height': 260 }},
   { 'type': '12', size: { 'width': 500, 'height': 300 }},
   { 'type': '15', size: { 'width': 340, 'height': 260 }}
 ]
-const defaultForm = { articleId: null, title: '', introduction: '', content: '', thumbnail: null, qrcode: null, linkUrl: '', saveFilename: '', filename: '', topFlg: 0, captureFlg: 0, updateUser: null, updateTime: null, tips: '', searchType: 0, createUser: null, createTime: null, articleType: 0, articleDate: null, articleFrom: '' }
+const defaultForm = { articleId: null, title: '', introduction: '', content: '', thumbnail: null, qrcode: null, linkUrl: '', saveFilename: '', filename: '', topFlg: 0, captureFlg: 0, updateUser: null, updateTime: null, tips: '', searchType: 0, readCount: 0, seo1: null, seo2: null, seo3: null, createUser: null, createTime: null, articleType: 0, articleDate: null, articleFrom: '' }
 export default {
   name: 'Article',
   components: { pagination, crudOperation, rrOperation, udOperation, myUpload, DateRangePicker },
@@ -283,6 +296,15 @@ export default {
         ],
         tips: [
           { min: 2, max: 200, message: '长度在 2 到 200 个字符', trigger: 'blur' }
+        ],
+        seo1: [
+          { min: 0, max: 500, message: '长度在 0 到 500 个字符', trigger: 'blur' }
+        ],
+        seo2: [
+          { min: 0, max: 500, message: '长度在 0 到 500 个字符', trigger: 'blur' }
+        ],
+        seo3: [
+          { min: 0, max: 500, message: '长度在 0 到 500 个字符', trigger: 'blur' }
         ]
       },
       editor: undefined,

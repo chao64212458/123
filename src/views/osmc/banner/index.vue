@@ -2,24 +2,51 @@
   <div class="app-container">
     <!--工具栏-->
     <div class="head-container">
+      <!--如果想在工具栏加入更多按钮，可以使用插槽方式， slot = 'left' or 'right'-->
+      <crudOperation :permission="permission" />
       <!--表单组件-->
-      <el-dialog :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="500px">
-        <el-form ref="form" :model="form" size="small" label-width="80px">
-          <el-form-item label="Banner">
-            <img ref="bannerUrl" :src="form.partnerIcon ? baseApi + '/file/images/' + form.partnerIcon : Avatar" title="点击上传图片" class="avatar" @click="toggleShow">
+      <el-dialog :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="700px">
+        <el-form ref="form" :model="form" size="small" label-width="100px">
+          <el-form-item label="Banner名称" prop="tips">
+            <el-input v-model="form.bannerName" style="width: 370px;" />
+          </el-form-item>
+          <el-form-item label="首页推荐">
+            <el-radio v-for="item in dict.article_top_type" :key="item.id" v-model="form.topFlg" :label="item.value">{{ item.label }}</el-radio>
+          </el-form-item>
+          <el-form-item label="排序">
+            <el-input v-model="form.sortNum" type="number" style="width: 370px;" />
+          </el-form-item>
+          <el-form-item label="Banner图层1">
+            <img ref="banner1Url" :src="form.banner1Url ? baseApi + '/file/images/' + form.banner1Url : Avatar" title="点击上传图片" class="avatar" @click="toggle1Show">
             <myUpload
-              v-model="show"
+              v-model="banner1show"
               field="file"
               :headers="headers"
-              :width="300"
-              :height="168"
+              :width="1920"
+              :height="956"
               img-format="jpg"
               :url="imagesUploadApi"
               :no-circle="true"
               :no-square="true"
-              @crop-upload-success="cropUploadSuccess"
+              @crop-upload-success="crop1UploadSuccess"
             />
-            <label class="el-form-item-label">※图片尺寸要求：300 x 168</label>
+            <label class="el-form-item-label">※图片尺寸要求：1920 x 956</label>
+          </el-form-item>
+          <el-form-item label="Banner图层2">
+            <img ref="banner2Url" :src="form.banner2Url ? baseApi + '/file/images/' + form.banner2Url : Avatar" title="点击上传图片" class="avatar" @click="toggle2Show">
+            <myUpload
+              v-model="banner2show"
+              field="file"
+              :headers="headers"
+              :width="1920"
+              :height="956"
+              img-format="png"
+              :url="imagesUploadApi"
+              :no-circle="true"
+              :no-square="true"
+              @crop-upload-success="crop2UploadSuccess"
+            />
+            <label class="el-form-item-label">※图片尺寸要求：1920 x 956</label>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -32,11 +59,32 @@
         <el-table-column type="selection" width="55" />
         <el-table-column prop="bannerId" label="BannerID" />
         <el-table-column prop="bannerName" label="Banner名称" />
-        <el-table-column prop="bannerUrl" label="Banner图片">
+        <el-table-column prop="topFlg" label="首页推荐">
+          <template slot-scope="scope">
+            {{ dict.label.article_top_type[scope.row.topFlg] }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="sortNum" label="排序" />
+        <el-table-column prop="banner1Url" label="Banner图层1">
           <template slot-scope="{row}">
             <el-image
-              :src=" baseApi + '/file/images/' + row.bannerUrl"
-              :preview-src-list="[baseApi + '/file/images/' + row.bannerUrl]"
+              :src=" baseApi + '/file/images/' + row.banner1Url"
+              :preview-src-list="[baseApi + '/file/images/' + row.banner1Url]"
+              fit="contain"
+              lazy
+              class="avatar-small"
+            >
+              <div slot="error">
+                <i class="el-icon-document" />
+              </div>
+            </el-image>
+          </template>
+        </el-table-column>
+        <el-table-column prop="banner2Url" label="Banner图层2">
+          <template slot-scope="{row}">
+            <el-image
+              :src=" baseApi + '/file/images/' + row.banner2Url"
+              :preview-src-list="[baseApi + '/file/images/' + row.banner2Url]"
               fit="contain"
               lazy
               class="avatar-small"
@@ -67,20 +115,22 @@ import crudTBanner from '@/api/osmc/banner'
 import CRUD, { presenter, header, form, crud } from '@crud/crud'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
-
+import crudOperation from '@crud/CRUD.operation'
 import { mapGetters } from 'vuex'
 import myUpload from 'vue-image-crop-upload'
 import Avatar from '@/assets/images/noimage.jpg'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
-let iconFile = ''
-const defaultForm = { bannerId: null, bannerName: null, bannerUrl: null, createUser: null, createTime: null, updateUser: null, updateTime: null }
+let icon1File = ''
+let icon2File = ''
+const defaultForm = { bannerId: null, bannerName: null, banner1Url: null, banner2Url: null, topFlg: 0, sortNum: 999, createUser: null, createTime: null, updateUser: null, updateTime: null }
 export default {
-  name: 'TPartner',
-  components: { pagination, udOperation, myUpload },
+  name: 'TBanner',
+  components: { pagination, udOperation, crudOperation, myUpload },
   mixins: [presenter(), header(), form(defaultForm), crud()],
+  dicts: ['article_top_type'],
   cruds() {
-    return CRUD({ title: 'Banner管理', url: 'api/osmc/banner', idField: 'bannerId', sort: 'bannerId,asc', optShow: { add: false, edit: true, del: false, reset: false, download: false }, crudMethod: { ...crudTBanner }})
+    return CRUD({ title: 'Banner管理', url: 'api/osmc/banner', idField: 'bannerId', sort: ['sortNum,asc', 'bannerId,asc'], optShow: { add: true, edit: true, del: true, reset: false, download: false }, crudMethod: { ...crudTBanner }})
   },
   data() {
     return {
@@ -89,7 +139,8 @@ export default {
         edit: ['admin', 'banner:edit'],
         del: ['admin', 'banner:del']
       },
-      show: false,
+      banner1show: false,
+      banner2show: false,
       Avatar: Avatar,
       headers: {
         'Authorization': getToken()
@@ -108,35 +159,62 @@ export default {
       return true
     },
     [CRUD.HOOK.beforeToEdit](crud, form) {
-      iconFile = `${form.bannerUrl}`
-      if (this.$refs.bannerUrl) {
-        if (!iconFile) {
-          this.$refs.bannerUrl.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + iconFile
+      form.topFlg = `${form.topFlg}`
+      icon1File = `${form.banner1Url}`
+      if (this.$refs.banner1Url) {
+        if (!icon1File) {
+          this.$refs.banner1Url.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + icon1File
         } else {
-          this.$refs.bannerUrl.src = Avatar
+          this.$refs.banner1Url.src = Avatar
+        }
+      }
+      icon2File = `${form.banner2Url}`
+      if (this.$refs.banner2Url) {
+        if (!icon1File) {
+          this.$refs.banner2Url.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + icon2File
+        } else {
+          this.$refs.banner2Url.src = Avatar
         }
       }
     },
     // 新增与编辑前做的操作
     [CRUD.HOOK.afterToCU](crud, form) {
-      iconFile = `${form.bannerUrl}`
-      if (this.$refs.bannerUrl) {
-        if (!iconFile) {
-          this.$refs.bannerUrl.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + iconFile
+      form.topFlg = `${form.topFlg}`
+      icon1File = `${form.banner1Url}`
+      if (this.$refs.banner1Url) {
+        if (!icon1File) {
+          this.$refs.banner1Url.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + icon1File
         } else {
-          this.$refs.bannerUrl.src = Avatar
+          this.$refs.banner1Url.src = Avatar
+        }
+      }
+      icon2File = `${form.banner2Url}`
+      if (this.$refs.banner2Url) {
+        if (!icon1File) {
+          this.$refs.banner2Url.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + icon2File
+        } else {
+          this.$refs.banner2Url.src = Avatar
         }
       }
     },
     [CRUD.HOOK.afterValidateCU](crud) {
-      crud.form.bannerUrl = iconFile
+      crud.form.banner1Url = icon1File
+      crud.form.banner2Url = icon2File
     },
-    toggleShow() {
-      this.show = !this.show
+    toggle1Show() {
+      this.banner1show = !this.banner1show
     },
-    cropUploadSuccess(jsonData, field) {
-      this.$refs.bannerUrl.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + jsonData.realName
-      iconFile = jsonData.realName
+    toggle2Show() {
+      this.banner2show = !this.banner2show
+    },
+    crop1UploadSuccess(jsonData, field) {
+      this.$refs.banner1Url.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + jsonData.realName
+      icon1File = jsonData.realName
+      store.dispatch('GetInfo').then(() => {})
+    },
+    crop2UploadSuccess(jsonData, field) {
+      this.$refs.banner2Url.src = process.env.VUE_APP_BASE_API === '/' ? '' : process.env.VUE_APP_BASE_API + '/file/images/' + jsonData.realName
+      icon2File = jsonData.realName
       store.dispatch('GetInfo').then(() => {})
     }
   }
@@ -145,8 +223,8 @@ export default {
 
 <style scoped>
   .avatar {
-    width: 300px;
-    height: 168px;
+    width: 480px;
+    height: 239px;
     /* border-radius: 18px; */
   }
   .avatar-small {
