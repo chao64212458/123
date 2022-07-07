@@ -22,9 +22,24 @@
           <img :src="codeUrl" @click="getCode">
         </div>
       </el-form-item>
+      <div   class="bottom">
       <el-checkbox v-model="loginForm.rememberMe" style="margin:0 0 25px 0;">
         记住我
       </el-checkbox>
+       <el-dropdown class="lang avatar-container right-menu-item hover-effect" trigger="click">
+        <div class="avatar-wrapper">
+         <span>后台语言版本：中文后台 <i class="el-icon-caret-bottom"></i></span>
+        </div>
+        <el-dropdown-menu class=" " slot="dropdown">
+          <a v-for="(item , i) in langArr " :key="i"  :href="item.url">
+            <el-dropdown-item>
+              {{item.name}}
+            </el-dropdown-item>
+          </a> 
+        </el-dropdown-menu>
+      </el-dropdown>
+      </div>
+    
       <el-form-item style="width:100%;">
         <el-button :loading="loading" size="medium" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
           <span v-if="!loading">登 录</span>
@@ -68,7 +83,8 @@ export default {
         code: [{ required: true, trigger: 'change', message: '验证码不能为空' }]
       },
       loading: false,
-      redirect: undefined
+      redirect: undefined,
+     langArr :JSON.parse(process.env.VUE_APP_BASE_URL)
     }
   },
   watch: {
@@ -87,12 +103,15 @@ export default {
     }
   },
   created() {
+   
     // 获取验证码
     this.getCode()
     // 获取用户名密码等Cookie
     this.getCookie()
     // token 过期提示
     this.point()
+
+    
   },
   methods: {
     getCode() {
@@ -211,4 +230,8 @@ export default {
       vertical-align:middle
     }
   }
+
+  .bottom{display: flex;justify-content:space-between;align-items: flex-start;}
+    .bottom::before{display: none;}
+        .bottom::after{display: none;}
 </style>

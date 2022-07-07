@@ -6,21 +6,36 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+           
         <!-- <search id="header-search" class="right-menu-item" /> -->
 
         <!-- <el-tooltip content="项目文档" effect="dark" placement="bottom">
           <Doc class="right-menu-item hover-effect" />
         </el-tooltip> -->
 
-        <el-tooltip content="全屏缩放" effect="dark" placement="bottom">
+        <!-- <el-tooltip content="全屏缩放" effect="dark" placement="bottom">
           <screenfull id="screenfull" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        </el-tooltip> -->
 
         <!-- <el-tooltip content="布局设置" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip> -->
 
+     
+
       </template>
+      <el-dropdown class="lang avatar-container right-menu-item hover-effect" trigger="click">
+        <div class="avatar-wrapper">
+         <span>后台语言版本：中文后台 <i class="el-icon-caret-bottom"></i></span>
+        </div>
+        <el-dropdown-menu class=" " slot="dropdown">
+          <a v-for="(item , i) in langArr " :key="i"  :href="item.url">
+            <el-dropdown-item>
+              {{item.name}}
+            </el-dropdown-item>
+          </a> 
+        </el-dropdown-menu>
+      </el-dropdown>
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
@@ -65,7 +80,8 @@ export default {
   data() {
     return {
       Avatar: Avatar,
-      dialogVisible: false
+      dialogVisible: false,
+      langArr :JSON.parse(process.env.VUE_APP_BASE_URL)
     }
   },
   computed: {
@@ -87,6 +103,7 @@ export default {
       }
     }
   },
+    
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
@@ -190,6 +207,16 @@ export default {
 
       }
     }
+
+    .lang{
+      display: inline-block; vertical-align: text-bottom ;height: 100%;font-size:  14px; 
+      .avatar-wrapper{
+        margin-top: 0;
+        i.el-icon-caret-bottom{top: 20px;}
+        } 
+      
+      }
+     
   }
 }
 </style>
